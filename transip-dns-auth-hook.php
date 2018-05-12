@@ -8,12 +8,13 @@ const CHALLENGE_NAME = '_acme-challenge';
 $domain = getenv('CERTBOT_DOMAIN');
 $token = getenv('CERTBOT_VALIDATION');
 $baseDomain = findBaseDomain($domain);
+$subdomain = getSubdomain($domain, $baseDomain);
 $dnsEntries = getDnsEntries($baseDomain);
-deployChallenge($baseDomain, $dnsEntries, $token);
 
-echo 'DOMAIN: ' . $domain, PHP_EOL;
-echo 'TOKEN: ' . $token, PHP_EOL;
-echo 'BASE DOMAIN: ' . $baseDomain, PHP_EOL;
+echo 'Deploying DNS-01 challenge for ' . $domain . '...' . PHP_EOL;
+echo 'Base: ' . $baseDomain . ', Sub: ' . $subdomain, PHP_EOL;
+
+deployChallenge($baseDomain, $subdomain, $dnsEntries, $token);
 
 function getDomainNames()
 {
@@ -58,6 +59,11 @@ function findBaseDomain($domain)
 	return $baseDomain;
 }
 
+function getSubdomain($domain, $baseDomain)
+{
+	return str_replace('.' . $baseDomain, '', $domain);
+}
+
 function getDnsEntries($domain)
 {
 	$dnsEntries = array();
@@ -75,23 +81,32 @@ function getDnsEntries($domain)
 	return $dnsEntries;
 }
 
-function deployChallenge($domain, $dnsEntries, $token)
+function deployChallenge($domain, $subdomain, $dnsEntries, $token)
 {
 	$challengesFound = 0;
+	$challengeName = CHALLENGE_NAME;
+
+	if($subdomain)
+	{
+		$challengeName = CHALLENGE_NAME . '.' . $subdomain;
+	}
 
 	foreach($dnsEntries as $key => $dnsEntry)
 	{
 		// Challenge record already exists, overwrite it with the new challenge
-		if($dnsEntry->name === CHALLENGE_NAME)
+		if($dnsEntry->name === $challengeName)
 		{
-			$dnsEntries[$key] = new Transip_DnsEntry(CHALLENGE_NAME, TTL, Transip_DnsEntry::TYPE_TXT, $token);
+			$dnsEntries[$key] = new Transip_DnsEntry($challengeName, TTL, Transip_DnsEntry::TYPE_TXT, $token);
 			$challengesFound++;
 		}
 	}
 
 	// Create a new challenge record
-	$dnsEntries[] = new Transip_DnsEntry(CHALLENGE_NAME, TTL, Transip_DnsEntry::TYPE_TXT, $token);
-	$challengesFound++;
+	if($challengesFound === 0)
+	{
+		$dnsEntries[] = new Transip_DnsEntry($challengeName, TTL, Transip_DnsEntry::TYPE_TXT, $token);
+		$challengesFound++;
+	}
 
 	if($challengesFound > 1)
 	{
@@ -113,3 +128,4 @@ function deployChallenge($domain, $dnsEntries, $token)
 		exit(1);
 	}
 }
+?>
