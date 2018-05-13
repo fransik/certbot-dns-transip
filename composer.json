@@ -1,13 +1,13 @@
 {
     "name": "fransik/certbot-dns-transip",
-    "description": "",
+    "description": "Certbot hook to solve a DNS-01 challenge, by creating TXT records using the TransIP API.",
     "keywords": ["certbot", "letsencrypt", "transip", "dns-01"],
     "homepage": "https://github.com/fransik/certbot-dns-transip",
     "license": "MIT",
     "authors": [
         {
             "name": "Frans Heeremans",
-            "email": "git@fransik.nl",
+            "email": "mail@fransik.nl",
             "homepage": "https://github.com/fransik"
         }
     ],
