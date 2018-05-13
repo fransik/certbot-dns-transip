@@ -1,0 +1,35 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "hash": "fc40e5da6c8238ac17c316ce4e22f1f4",
+    "content-hash": "c34dadd20c5e9bf47533b57735c06de4",
+    "packages": [
+        {
+            "name": "transip/api",
+            "version": "5.6",
+            "dist": {
+                "type": "tar",
+                "url": "https://api.transip.nl/downloads/transapi_transip.nl_v5_6.tar.gz",
+                "reference": null,
+                "shasum": null
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "Transip/"
+                ]
+            }
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}

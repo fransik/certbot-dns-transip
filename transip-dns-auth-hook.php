@@ -1,6 +1,6 @@
 #!/usr/bin/php
 <?php
-require_once('Transip/DomainService.php');
+require __DIR__ . '/vendor/autoload.php';
 
 $domain = getenv('CERTBOT_DOMAIN');
 $token = getenv('CERTBOT_VALIDATION');
@@ -10,10 +10,6 @@ echo 'Deploying DNS-01 challenge for [' . $domain . ']...' . PHP_EOL;
 $baseDomain = findBaseDomain($domain);
 $challengeName = getChallengeName($domain, $baseDomain);
 $dnsEntries = createChallengeRecord($baseDomain, $challengeName, $token);
-
-// echo 'DNS records to be updated:' . PHP_EOL;
-// print_r($dnsEntries);
-
 saveDnsEntries($baseDomain, $dnsEntries);
 sleepUntilResolving($baseDomain, $challengeName, $token);
 
@@ -167,6 +163,7 @@ function sleepUntilResolving($baseDomain, $challengeName, $token)
 			$output = exec($execCommand);
 			if($output === $expected)
 			{
+				echo 'Challenge [' . $output . '] resolves.' . PHP_EOL;
 				return;
 			}
 			sleep($sleepSec);

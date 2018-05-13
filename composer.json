@@ -1,0 +1,36 @@
+{
+    "name": "fransik/certbot-dns-transip",
+    "description": "",
+    "keywords": ["certbot", "letsencrypt", "transip", "dns-01"],
+    "homepage": "https://github.com/fransik/certbot-dns-transip",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Frans Heeremans",
+            "email": "git@fransik.nl",
+            "homepage": "https://github.com/fransik"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/fransik/certbot-dns-transip/issues"
+    },
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "transip/api",
+                "version": "5.6",
+                "dist": {
+                    "url": "https://api.transip.nl/downloads/transapi_transip.nl_v5_6.tar.gz",
+                    "type": "tar"
+                },
+                "autoload": {
+                    "classmap": ["Transip/"]
+                }
+            }
+        }
+    ],
+    "require": {
+        "transip/api": "~5.6"
+    }
+}
