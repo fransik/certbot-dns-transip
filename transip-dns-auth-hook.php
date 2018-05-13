@@ -8,11 +8,14 @@ $token = getenv('CERTBOT_VALIDATION');
 echo 'Deploying DNS-01 challenge for [' . $domain . ']...' . PHP_EOL;
 
 $baseDomain = findBaseDomain($domain);
-$dnsEntries = createChallengeRecord($domain, $baseDomain, $token);
+$challengeName = getChallengeName($domain, $baseDomain);
+$dnsEntries = createChallengeRecord($baseDomain, $challengeName, $token);
 
-echo 'DNS records to be updated:' . PHP_EOL;
-print_r($dnsEntries);
+// echo 'DNS records to be updated:' . PHP_EOL;
+// print_r($dnsEntries);
+
 saveDnsEntries($baseDomain, $dnsEntries);
+sleepUntilResolving($baseDomain, $challengeName, $token);
 
 function getDomainNames()
 {
@@ -101,12 +104,11 @@ function getChallengeName($domain, $baseDomain)
 	return $challengeName;
 }
 
-function createChallengeRecord($domain, $baseDomain, $token)
+function createChallengeRecord($baseDomain, $challengeName, $token)
 {
 	$ttl = 60;
 	$challengesFound = 0;
 	$dnsEntries = getDnsEntries($baseDomain);
-	$challengeName = getChallengeName($domain, $baseDomain);
 
 	foreach($dnsEntries as $key => $dnsEntry)
 	{
@@ -140,12 +142,35 @@ function saveDnsEntries($baseDomain, $dnsEntries)
 	{
 		// Commit the changes to TransIP's DNS service
 		Transip_DomainService::setDnsEntries($baseDomain, $dnsEntries);
-		echo 'The DNS-01 challenge has been successfully deployed.';
+		echo 'The DNS-01 challenge has been successfully deployed.' . PHP_EOL;
 	}
 	catch(SoapFault $e)
 	{
 		echo '[ERROR] ' . $e->getMessage(), PHP_EOL;
 		exit(1);
+	}
+}
+
+function sleepUntilResolving($baseDomain, $challengeName, $token)
+{
+	$resolvers = ['ns0.transip.net', 'ns1.transip.nl', 'ns2.transip.eu'];
+	$record = escapeshellarg($challengeName . '.' . $baseDomain);
+	$expected = '"' . $token . '"'; // dig returns answer between double quotes
+	$sleepSec = 30;
+	$tries = 3;
+
+	for ($i=0; $i < $tries; $i++)
+	{
+		foreach($resolvers as $resolver)
+		{
+			$execCommand = 'dig @' . $resolver . ' TXT ' . $record . ' +short';
+			$output = exec($execCommand);
+			if($output === $expected)
+			{
+				return;
+			}
+			sleep($sleepSec);
+		}
 	}
 }
 ?>
