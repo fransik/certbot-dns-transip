@@ -1,0 +1,16 @@
+#!/usr/bin/env php
+<?php
+require __DIR__ . '/../vendor/autoload.php';
+
+use FransIk\Certbot\TransipDns;
+
+if (PHP_SAPI !== 'cli') {
+    echo '[ERROR] transip-dns-auth should be invoked via the CLI' . PHP_EOL;
+}
+
+$domain = getenv('CERTBOT_DOMAIN');
+$token = getenv('CERTBOT_VALIDATION');
+$authResult = getenv('CERTBOT_AUTH_OUTPUT');
+
+$transipDns = new TransipDns($domain, $token);
+echo $authResult, PHP_EOL;
