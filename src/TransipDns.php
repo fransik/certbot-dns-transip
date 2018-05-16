@@ -67,7 +67,7 @@ class TransipDns
         return $challengeName;
     }
 
-    public function createChallengeRecord()
+    private function updateChallengeRecord($create)
     {
         $challengesFound = 0;
         $dnsEntries = \Transip_DomainService::getInfo($this->baseDomain)->dnsEntries;
@@ -75,13 +75,19 @@ class TransipDns
         foreach ($dnsEntries as $key => $dnsEntry) {
             // Challenge record already exists, overwrite it with the new challenge
             if ($dnsEntry->name === $this->challengeName) {
-                $dnsEntries[$key] = new \Transip_DnsEntry($this->challengeName, self::TTL, \Transip_DnsEntry::TYPE_TXT, $this->token);
+                if ($create) {
+                    $dnsEntries[$key] = new \Transip_DnsEntry($this->challengeName, self::TTL, \Transip_DnsEntry::TYPE_TXT, $this->token);
+                } else {
+                    // Remove the challenge record
+                    unset($dnsEntries[$key]);
+                    $dnsEntries = array_values($dnsEntries);
+                }
                 $challengesFound++;
             }
         }
 
         // Create a new challenge record
-        if ($challengesFound === 0) {
+        if ($create && $challengesFound === 0) {
             $dnsEntries[] = new \Transip_DnsEntry($this->challengeName, self::TTL, \Transip_DnsEntry::TYPE_TXT, $this->token);
             $challengesFound++;
         }
@@ -93,11 +99,21 @@ class TransipDns
         return $dnsEntries;
     }
 
+    public function createChallengeRecord()
+    {
+        return $this->updateChallengeRecord(true);
+    }
+
+    public function removeChallengeRecord()
+    {
+        return $this->updateChallengeRecord(false);
+    }
+
     public function commit($dnsEntries, $waitUntilPropagated = true)
     {
         \Transip_DomainService::setDnsEntries($this->baseDomain, $dnsEntries);
         if ($waitUntilPropagated && $this->isChallengePropagated()) {
-            echo '[TransIpDnsCompleted]=' . $this->challengeName, PHP_EOL;
+            echo 'The DNS-01 challenge has been successfully deployed.' . PHP_EOL;
         }
     }
 
