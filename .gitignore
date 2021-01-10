@@ -1,1 +1,5 @@
-/vendor
+/vendor/
+/.idea/
+/.php_cs
+/.php_cs.cache
+/phpstan.neon
