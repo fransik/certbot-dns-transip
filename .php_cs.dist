@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 $finder = PhpCsFixer\Finder::create()
     ->in(__DIR__)
-    ->append([__FILE__]);
+    ->notPath('config.php')
+    ->append([
+        __FILE__,
+        __DIR__.'/bin/auth',
+        __DIR__.'/bin/cleanup',
+    ]);
 
 return (new PhpCsFixer\Config())
     ->setRiskyAllowed(true)
@@ -19,5 +24,15 @@ return (new PhpCsFixer\Config())
         'php_unit_strict' => true,
         'no_useless_else' => true,
         'no_useless_return' => true,
+        'global_namespace_import' => [
+            'import_classes' => true,
+            'import_constants' => true,
+            'import_functions' => true,
+        ],
+        'ordered_imports' => ['imports_order' => [
+            'class',
+            'function',
+            'const',
+        ]],
     ])
     ->setFinder($finder);
