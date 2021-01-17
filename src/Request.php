@@ -20,22 +20,22 @@ final class Request
     private const VALIDATION = 'CERTBOT_VALIDATION';
 
     /**
-     * @var string
+     * The domain being authenticated.
      *
-     * The domain being authenticated
+     * @var string
      */
     private $domain;
 
     /**
-     * @var string
+     * The validation string.
      *
-     * The validation string
+     * @var string
      */
     private $validation;
 
     /**
-     * @param mixed $domain
-     * @param mixed $validation
+     * @param mixed $domain     the domain being authenticated
+     * @param mixed $validation the validation string
      */
     private function __construct($domain, $validation)
     {
