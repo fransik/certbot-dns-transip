@@ -37,7 +37,7 @@ final class Request
      * @param mixed $domain     the domain being authenticated
      * @param mixed $validation the validation string
      */
-    private function __construct($domain, $validation)
+    public function __construct($domain, $validation)
     {
         $this->assertNonEmptyString(self::DOMAIN, $domain);
         $this->assertNonEmptyString(self::VALIDATION, $validation);
