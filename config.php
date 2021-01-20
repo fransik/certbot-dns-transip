@@ -1,7 +1,9 @@
 <?php
 
+use Fransik\CertbotTransip\Config;
+
 return [
-    'transip_login' => '',
-    'transip_private_key' => '',
-    'transip_whitelist_only_tokens' => false,
+    Config::TRANSIP_LOGIN => '',
+    Config::TRANSIP_PRIVATE_KEY => '',
+    Config::TRANSIP_WHITELIST_ONLY_TOKENS => false,
 ];

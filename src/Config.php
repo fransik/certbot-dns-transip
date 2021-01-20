@@ -11,9 +11,9 @@ use function sprintf;
 
 final class Config
 {
-    public const OPTION_TRANSIP_LOGIN = 'transip_login';
-    public const OPTION_TRANSIP_PRIVATE_KEY = 'transip_private_key';
-    public const OPTION_TRANSIP_WHITELIST_ONLY_TOKENS = 'transip_whitelist_only_tokens';
+    public const TRANSIP_LOGIN = 'transip_login';
+    public const TRANSIP_PRIVATE_KEY = 'transip_private_key';
+    public const TRANSIP_WHITELIST_ONLY_TOKENS = 'transip_whitelist_only_tokens';
 
     private const CONFIG_FILENAME = 'config.php';
 

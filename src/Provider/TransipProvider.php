@@ -23,9 +23,9 @@ final class TransipProvider implements Provider
     public function __construct(Config $config)
     {
         $this->api = new TransipAPI(
-            $config->get(Config::OPTION_TRANSIP_LOGIN),
-            $config->get(Config::OPTION_TRANSIP_PRIVATE_KEY),
-            $config->get(Config::OPTION_TRANSIP_WHITELIST_ONLY_TOKENS),
+            $config->get(Config::TRANSIP_LOGIN),
+            $config->get(Config::TRANSIP_PRIVATE_KEY),
+            $config->get(Config::TRANSIP_WHITELIST_ONLY_TOKENS),
         );
     }
 
@@ -46,14 +46,14 @@ final class TransipProvider implements Provider
      */
     public function createChallengeRecord(ChallengeRecord $challenge): void
     {
+        $repository = $this->api->domainDns();
         $dnsEntry = (new DnsEntry())
             ->setType(DnsEntry::TYPE_TXT)
             ->setExpire(300)
             ->setName($challenge->getName())
             ->setContent($challenge->getContent());
 
-        $this->api->domainDns()
-            ->addDnsEntryToDomain($challenge->getDomain(), $dnsEntry);
+        $repository->addDnsEntryToDomain($challenge->getDomain(), $dnsEntry);
     }
 
     /**

@@ -1,5 +1,7 @@
 <?php
 
+use Fransik\CertbotTransip\Config;
+
 return [
-    'transip_login' => 'test',
+    Config::TRANSIP_LOGIN => 'test',
 ];
