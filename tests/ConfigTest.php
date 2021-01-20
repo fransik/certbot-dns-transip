@@ -37,7 +37,7 @@ class ConfigTest extends TestCase
     {
         $config = Config::createFromFile(__DIR__);
 
-        $this->assertSame('test', $config->get(Config::TRANSIP_LOGIN));
+        $this->assertSame('transipdemo', $config->get(Config::TRANSIP_LOGIN));
     }
 
     public function testCanNotBeCreatedWithNonExistentFile(): void

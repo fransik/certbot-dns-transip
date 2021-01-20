@@ -23,14 +23,15 @@ final class TransipProvider implements Provider
     public function __construct(Config $config)
     {
         $this->api = new TransipAPI(
-            $config->get(Config::TRANSIP_LOGIN),
-            $config->get(Config::TRANSIP_PRIVATE_KEY),
-            $config->get(Config::TRANSIP_WHITELIST_ONLY_TOKENS),
+            $config->get(Config::TRANSIP_LOGIN, ''),
+            $config->get(Config::TRANSIP_PRIVATE_KEY, ''),
+            $config->get(Config::TRANSIP_WHITELIST_ONLY_TOKENS, true),
+            $config->get(Config::TRANSIP_TOKEN, ''),
         );
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function canManageDomain(string $domainName): bool
     {
@@ -42,7 +43,7 @@ final class TransipProvider implements Provider
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function createChallengeRecord(ChallengeRecord $challenge): void
     {
@@ -57,7 +58,7 @@ final class TransipProvider implements Provider
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     public function removeChallengeRecord(ChallengeRecord $challenge): void
     {
