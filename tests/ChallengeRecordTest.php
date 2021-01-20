@@ -9,15 +9,16 @@ use PHPUnit\Framework\TestCase;
 
 class ChallengeRecordTest extends TestCase
 {
+    private const VALIDATION = 'NXk0cjk0M1ZmeE5JRW1lNkgyeFp0cVpkaktFcWo1RktGeGlwd292UGt3Yw';
+
     public function testReturnsExpectedValues(): void
     {
         $baseDomain = 'example.com';
-        $validation = 'za1iqw739123xxZ#qqq2';
 
-        $challenge = new ChallengeRecord($baseDomain, $validation);
+        $challenge = new ChallengeRecord($baseDomain, self::VALIDATION);
 
         $this->assertSame($baseDomain, $challenge->getDomain());
-        $this->assertSame($validation, $challenge->getContent());
+        $this->assertSame(self::VALIDATION, $challenge->getContent());
         $this->assertSame('_acme-challenge', $challenge->getName());
     }
 
@@ -27,13 +28,12 @@ class ChallengeRecordTest extends TestCase
     public function testReturnsExpectedValuesWhenSubdomainIsSet(string $subdomain, string $expectedName): void
     {
         $baseDomain = 'acme.co.uk';
-        $validation = 'xr94dulPoXaiHC3QeRzK0ObmQvRM9Z0U';
 
-        $challenge = new ChallengeRecord($baseDomain, $validation);
+        $challenge = new ChallengeRecord($baseDomain, self::VALIDATION);
         $challenge->setSubdomain($subdomain);
 
         $this->assertSame($baseDomain, $challenge->getDomain());
-        $this->assertSame($validation, $challenge->getContent());
+        $this->assertSame(self::VALIDATION, $challenge->getContent());
         $this->assertSame($expectedName, $challenge->getName());
     }
 

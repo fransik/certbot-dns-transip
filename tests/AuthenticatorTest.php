@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 
 class AuthenticatorTest extends TestCase
 {
-    private const VALIDATION = '72jkAui!uiQ111#z';
+    private const VALIDATION = 'RzNUVnFXdGdTd0ZMY1JxalBrd1NObW5aVjZ3b1Q0YUFLeDVCVklpRVFQaQ';
 
     /** @var Authenticator */
     private $authenticator;

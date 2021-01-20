@@ -14,7 +14,7 @@ class RequestTest extends TestCase
     public function testCanBeCreatedFromEnvironmentVariables(): void
     {
         $domain = 'example.org';
-        $validation = 'x798234Aj123!xkj31247123asd';
+        $validation = 'T0RjbFRraThRdXZQcWpZSGdUS3gwTG1LbEI4b3I0WEttTFJJSXFlNFo0SA';
 
         putenv("CERTBOT_DOMAIN=${domain}");
         putenv("CERTBOT_VALIDATION=${validation}");
