@@ -68,11 +68,19 @@ final class ChallengeRecord
      */
     public function getName(): string
     {
-        if (null === $this->subdomain) {
+        if ($this->subdomain === null) {
             return self::CHALLENGE_LABEL;
         }
 
         return sprintf('%s.%s', self::CHALLENGE_LABEL, $this->subdomain);
+    }
+
+    /**
+     * Name including domain (e.g. _acme-challenge.example.com).
+     */
+    public function getFullName(): string
+    {
+        return sprintf('%s.%s', $this->getName(), $this->getDomain());
     }
 
     /**

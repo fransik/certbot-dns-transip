@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class ChallengeRecordTest extends TestCase
 {
+    private const CHALLENGE = '_acme-challenge';
     private const VALIDATION = 'NXk0cjk0M1ZmeE5JRW1lNkgyeFp0cVpkaktFcWo1RktGeGlwd292UGt3Yw';
 
     public function testReturnsExpectedValues(): void
@@ -19,7 +20,11 @@ class ChallengeRecordTest extends TestCase
 
         $this->assertSame($baseDomain, $challenge->getDomain());
         $this->assertSame(self::VALIDATION, $challenge->getContent());
-        $this->assertSame('_acme-challenge', $challenge->getName());
+        $this->assertSame(self::CHALLENGE, $challenge->getName());
+        $this->assertSame(
+            self::CHALLENGE.'.'.$baseDomain,
+            $challenge->getFullName()
+        );
     }
 
     /**
@@ -35,6 +40,10 @@ class ChallengeRecordTest extends TestCase
         $this->assertSame($baseDomain, $challenge->getDomain());
         $this->assertSame(self::VALIDATION, $challenge->getContent());
         $this->assertSame($expectedName, $challenge->getName());
+        $this->assertSame(
+            $expectedName.'.'.$baseDomain,
+            $challenge->getFullName()
+        );
     }
 
     /**
@@ -43,10 +52,10 @@ class ChallengeRecordTest extends TestCase
     public function provideSubdomains(): array
     {
         return [
-            ['www', '_acme-challenge.www'],
-            ['www.', '_acme-challenge.www'],
-            ['mail.cs', '_acme-challenge.mail.cs'],
-            ['mail.cs.', '_acme-challenge.mail.cs'],
+            ['www', self::CHALLENGE.'.www'],
+            ['www.', self::CHALLENGE.'.www'],
+            ['mail.cs', self::CHALLENGE.'.mail.cs'],
+            ['mail.cs.', self::CHALLENGE.'.mail.cs'],
         ];
     }
 }
