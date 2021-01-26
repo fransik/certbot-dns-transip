@@ -15,6 +15,8 @@ final class Config
     public const TRANSIP_PRIVATE_KEY = 'transip_private_key';
     public const TRANSIP_WHITELIST_ONLY_TOKENS = 'transip_whitelist_only_tokens';
     public const TRANSIP_TOKEN = 'transip_token';
+    public const WAIT_SECONDS = 'wait_seconds';
+    public const MAX_TRIES = 'max_tries';
 
     private const CONFIG_FILENAME = 'config.php';
 

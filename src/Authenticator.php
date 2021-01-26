@@ -4,20 +4,43 @@ declare(strict_types=1);
 
 namespace Fransik\CertbotTransip;
 
+use Fransik\CertbotTransip\Dns\DnsResolver;
 use Fransik\CertbotTransip\Exception\UnableToManageDns;
+use Fransik\CertbotTransip\Exception\UnableToResolve;
 use Fransik\CertbotTransip\Provider\Provider;
 use function substr;
 use function strpos;
 use function str_replace;
+use function sleep;
 
 final class Authenticator
 {
     /** @var Provider */
     private $provider;
 
-    public function __construct(Provider $provider)
+    /** @var DnsResolver */
+    private $resolver;
+
+    /**
+     * Amount of seconds to wait between attempts to resolve the challenge record.
+     *
+     * @var int
+     */
+    private $waitSeconds;
+
+    /**
+     * Maximum amount of times resolving the challenge record should be attempted.
+     *
+     * @var int
+     */
+    private $maxTries;
+
+    public function __construct(Provider $provider, DnsResolver $resolver, Config $config)
     {
         $this->provider = $provider;
+        $this->resolver = $resolver;
+        $this->waitSeconds = (int) $config->get(Config::WAIT_SECONDS, 30);
+        $this->maxTries = (int) $config->get(Config::MAX_TRIES, 10);
     }
 
     public function handleAuthHook(Request $request): void
@@ -25,6 +48,7 @@ final class Authenticator
         $challenge = $this->getChallengeRecord($request);
 
         $this->provider->createChallengeRecord($challenge);
+        $this->waitUntilChallengeRecordResolves($challenge);
     }
 
     public function handleCleanupHook(Request $request): void
@@ -41,7 +65,7 @@ final class Authenticator
         $subdomain = $this->findSubdomain($domain, $baseDomain);
 
         $challenge = new ChallengeRecord($baseDomain, $request->getValidation());
-        if (null !== $subdomain) {
+        if ($subdomain !== null) {
             $challenge->setSubdomain($subdomain);
         }
 
@@ -70,5 +94,22 @@ final class Authenticator
         }
 
         return str_replace($baseDomain, '', $domain);
+    }
+
+    private function waitUntilChallengeRecordResolves(ChallengeRecord $challenge): void
+    {
+        for ($tries = 1; $tries <= $this->maxTries; $tries++) {
+            if ($this->resolver->hasChallengeRecord($challenge)) {
+                break;
+            }
+
+            if ($tries === $this->maxTries) {
+                throw UnableToResolve::challengeRecord($challenge, $this->maxTries);
+            }
+
+            sleep($this->waitSeconds);
+        }
+
+        sleep($this->waitSeconds); // Wait another round just to be sure DNS is fully propagated
     }
 }

@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Fransik\CertbotTransip\Tests;
 
 use Fransik\CertbotTransip\Authenticator;
+use Fransik\CertbotTransip\Config;
 use Fransik\CertbotTransip\Exception\UnableToManageDns;
+use Fransik\CertbotTransip\Exception\UnableToResolve;
 use Fransik\CertbotTransip\Request;
+use Fransik\CertbotTransip\Tests\Dns\TestResolver;
 use Fransik\CertbotTransip\Tests\Provider\TestProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -21,8 +24,11 @@ class AuthenticatorTest extends TestCase
     {
         parent::setUp();
 
-        $provider = new TestProvider();
-        $this->authenticator = new Authenticator($provider);
+        $this->authenticator = new Authenticator(
+            new TestProvider(),
+            new TestResolver(),
+            Config::createFromFile(__DIR__)
+        );
     }
 
     /**
@@ -68,6 +74,15 @@ class AuthenticatorTest extends TestCase
 
         $this->authenticator->handleCleanupHook(
             new Request($domain, self::VALIDATION)
+        );
+    }
+
+    public function testFailsWhenChallengeCanNotBeResolvedAfterMaxTries(): void
+    {
+        $this->expectException(UnableToResolve::class);
+
+        $this->authenticator->handleAuthHook(
+            new Request('unresolvable.local', self::VALIDATION)
         );
     }
 
