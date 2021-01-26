@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Fransik\CertbotTransip\Tests;
+namespace Fransik\CertbotTransip\Tests\Authenticator;
 
 use Fransik\CertbotTransip\Authenticator\Authenticator;
 use Fransik\CertbotTransip\Config;
@@ -12,6 +12,7 @@ use Fransik\CertbotTransip\Request;
 use Fransik\CertbotTransip\Tests\Dns\TestResolver;
 use Fransik\CertbotTransip\Tests\Provider\TestProvider;
 use PHPUnit\Framework\TestCase;
+use function dirname;
 
 class AuthenticatorTest extends TestCase
 {
@@ -27,7 +28,7 @@ class AuthenticatorTest extends TestCase
         $this->authenticator = new Authenticator(
             new TestProvider(),
             new TestResolver(),
-            Config::createFromFile(__DIR__)
+            Config::createFromFile(dirname(__DIR__))
         );
     }
 
