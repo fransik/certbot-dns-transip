@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Fransik\CertbotTransip\Tests;
 
-use Fransik\CertbotTransip\Authenticator;
+use Fransik\CertbotTransip\Authenticator\Authenticator;
 use Fransik\CertbotTransip\Config;
 use Fransik\CertbotTransip\Exception\UnableToManageDns;
 use Fransik\CertbotTransip\Exception\UnableToResolve;

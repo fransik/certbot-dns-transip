@@ -1,0 +1,17 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+require dirname(__DIR__).'/vendor/autoload.php';
+
+use Fransik\CertbotTransip\Authenticator\AuthenticatorFactory;
+use Fransik\CertbotTransip\Request;
+
+try {
+    $authenticator = AuthenticatorFactory::create();
+    $authenticator->handleAuthHook(Request::fromEnv());
+} catch (Throwable $e) {
+    echo 'Error: '.$e->getMessage().PHP_EOL;
+    exit(1);
+}

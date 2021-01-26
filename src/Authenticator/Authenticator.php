@@ -2,12 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Fransik\CertbotTransip;
+namespace Fransik\CertbotTransip\Authenticator;
 
+use Fransik\CertbotTransip\ChallengeRecord;
+use Fransik\CertbotTransip\Config;
 use Fransik\CertbotTransip\Dns\DnsResolver;
 use Fransik\CertbotTransip\Exception\UnableToManageDns;
 use Fransik\CertbotTransip\Exception\UnableToResolve;
 use Fransik\CertbotTransip\Provider\Provider;
+use Fransik\CertbotTransip\Request;
 use function substr;
 use function strpos;
 use function str_replace;
