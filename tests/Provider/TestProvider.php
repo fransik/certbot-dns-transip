@@ -10,18 +10,19 @@ use function in_array;
 
 final class TestProvider implements Provider
 {
+    private const AVAILABLE_DOMAINS = [
+        'example.com',
+        'certbot.co.uk',
+        'dev.net',
+        'unresolvable.local',
+    ];
+
     /**
      * @inheritDoc
      */
     public function canManageDomain(string $domainName): bool
     {
-        $availableDomains = [
-            'example.com',
-            'certbot.co.uk',
-            'dev.net',
-        ];
-
-        return in_array($domainName, $availableDomains, true);
+        return in_array($domainName, self::AVAILABLE_DOMAINS, true);
     }
 
     /**
