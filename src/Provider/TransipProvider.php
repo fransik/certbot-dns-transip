@@ -50,7 +50,7 @@ final class TransipProvider implements Provider
         $repository = $this->api->domainDns();
         $dnsEntry = (new DnsEntry())
             ->setType(DnsEntry::TYPE_TXT)
-            ->setExpire(300)
+            ->setExpire(60)
             ->setName($challenge->getName())
             ->setContent($challenge->getContent());
 
