@@ -9,9 +9,12 @@ use Net_DNS2_Exception;
 use Net_DNS2_Resolver;
 use Net_DNS2_RR_NS;
 use Net_DNS2_RR_A;
+use Net_DNS2_RR_TXT;
 use function count;
+use function array_filter;
 use function array_merge;
 use function array_map;
+use function in_array;
 
 final class NetDns2Resolver implements DnsResolver
 {
@@ -33,7 +36,7 @@ final class NetDns2Resolver implements DnsResolver
         try {
             $query = $this->resolver->query($challenge->getFullName(), 'TXT');
 
-            return count($query->answer) > 0;
+            return $this->challengeIsValid($query->answer, $challenge->getContent());
         } catch (Net_DNS2_Exception $e) {
             return false;
         }
@@ -78,5 +81,17 @@ final class NetDns2Resolver implements DnsResolver
         } catch (Net_DNS2_Exception $e) {
             return [];
         }
+    }
+
+    /**
+     * @param Net_DNS2_RR_TXT[] $records
+     */
+    private function challengeIsValid(array $records, string $challengeContent): bool
+    {
+        $validRecords = array_filter($records, function ($record) use ($challengeContent) {
+            return in_array($challengeContent, $record->text, true);
+        });
+
+        return count($validRecords) > 0;
     }
 }
