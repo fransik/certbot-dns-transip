@@ -1,0 +1,6 @@
+tests/
+vendor/
+.idea/
+.phpunit.cache/
+.php_cs.cache
+.git/
