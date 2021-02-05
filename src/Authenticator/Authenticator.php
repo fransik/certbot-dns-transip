@@ -43,7 +43,7 @@ final class Authenticator
         $this->provider = $provider;
         $this->resolver = $resolver;
         $this->waitSeconds = (int) $config->get(Config::WAIT_SECONDS, 30);
-        $this->maxTries = (int) $config->get(Config::MAX_TRIES, 10);
+        $this->maxTries = (int) $config->get(Config::MAX_TRIES, 20);
     }
 
     public function handleAuthHook(Request $request): void

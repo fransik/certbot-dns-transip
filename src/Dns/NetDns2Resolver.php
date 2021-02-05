@@ -23,7 +23,9 @@ final class NetDns2Resolver implements DnsResolver
 
     public function __construct()
     {
-        $this->resolver = new Net_DNS2_Resolver();
+        $this->resolver = new Net_DNS2_Resolver([
+            'ns_random' => false,
+        ]);
     }
 
     /**
@@ -31,23 +33,20 @@ final class NetDns2Resolver implements DnsResolver
      */
     public function hasChallengeRecord(ChallengeRecord $challenge): bool
     {
-        $this->useAuthoritativeNameservers($challenge->getDomain());
+        $validRecords = 0;
+        $nameservers = $this->getNameservers($challenge->getDomain());
 
-        try {
-            $query = $this->resolver->query($challenge->getFullName(), 'TXT');
+        foreach ($nameservers as $nameserver) {
+            $this->resolver->setServers([$nameserver]);
 
-            return $this->challengeIsValid($query->answer, $challenge->getContent());
-        } catch (Net_DNS2_Exception $e) {
-            return false;
+            $records = $this->getTxtRecords($challenge->getFullName());
+
+            if ($this->challengeIsValid($records, $challenge->getContent())) {
+                $validRecords++;
+            }
         }
-    }
 
-    private function useAuthoritativeNameservers(string $domain): void
-    {
-        $nameservers = $this->getNameservers($domain);
-        if (count($nameservers) > 0) {
-            $this->resolver->setServers($nameservers);
-        }
+        return $validRecords === count($nameservers);
     }
 
     /**
@@ -78,6 +77,20 @@ final class NetDns2Resolver implements DnsResolver
             return array_map(function (Net_DNS2_RR_A $ip): string {
                 return $ip->address;
             }, $query->answer);
+        } catch (Net_DNS2_Exception $e) {
+            return [];
+        }
+    }
+
+    /**
+     * @return Net_DNS2_RR_TXT[]
+     */
+    private function getTxtRecords(string $name): array
+    {
+        try {
+            $query = $this->resolver->query($name, 'TXT');
+
+            return $query->answer;
         } catch (Net_DNS2_Exception $e) {
             return [];
         }
