@@ -1,7 +1,8 @@
 {
     "name": "fransik/certbot-dns-transip",
-    "description": "Certbot hook to solve a DNS-01 challenge, by creating TXT records using the TransIP API.",
     "type": "project",
+    "description": "Certbot hook to solve a DNS-01 challenge, by creating TXT records using the TransIP API.",
+    "homepage": "https://github.com/fransik/certbot-dns-transip",
     "license": "MIT",
     "authors": [
         {
@@ -11,19 +12,19 @@
             "role": "Developer"
         }
     ],
-    "homepage": "https://github.com/fransik/certbot-dns-transip",
-    "support": {
-        "issues": "https://github.com/fransik/certbot-dns-transip/issues"
-    },
     "require": {
-        "php": "^7.3||^8.0",
+        "php": "^7.3 || ^8.0",
         "pear/net_dns2": "^1.5.2",
-        "transip/transip-api-php": "^6.5"
+        "transip/transip-api-php": "^6.6"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.18",
-        "phpstan/phpstan": "^0.12.68",
+        "phpstan/phpstan": "^0.12.74",
         "phpunit/phpunit": "^9.5"
+    },
+    "config": {
+        "preferred-install": "dist",
+        "sort-packages": true
     },
     "autoload": {
         "psr-4": {
@@ -35,8 +36,16 @@
             "Fransik\\CertbotTransip\\Tests\\": "tests/"
         }
     },
-    "config": {
-        "sort-packages": true
+    "prefer-stable": true,
+    "scripts": {
+        "code-coverage": "phpunit --coverage-clover=.build/coverage.xml",
+        "cs-check": "php-cs-fixer fix --diff --diff-format=udiff --dry-run --verbose",
+        "cs-fix": "php-cs-fixer fix",
+        "phpstan": "phpstan analyse --ansi",
+        "test": "phpunit"
     },
-    "prefer-stable": true
+    "support": {
+        "issues": "https://github.com/fransik/certbot-dns-transip/issues",
+        "source": "https://github.com/fransik/certbot-dns-transip"
+    }
 }

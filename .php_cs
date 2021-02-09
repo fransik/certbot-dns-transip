@@ -28,4 +28,5 @@ return (new PhpCsFixer\Config())
             'import_functions' => true,
         ],
     ])
+    ->setCacheFile(__DIR__.'/.build/.php_cs.cache')
     ->setFinder($finder);
