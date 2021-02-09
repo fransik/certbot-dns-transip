@@ -1,0 +1,13 @@
+<?php
+
+use Fransik\CertbotTransip\Config;
+
+return [
+    Config::TRANSIP_LOGIN => '',
+    Config::TRANSIP_PRIVATE_KEY => '
+-----BEGIN PRIVATE KEY-----
+-----END PRIVATE KEY-----',
+    // Config::TRANSIP_WHITELIST_ONLY_TOKENS => true,
+    // Config::WAIT_SECONDS => 30,
+    // Config::MAX_TRIES => 20,
+];

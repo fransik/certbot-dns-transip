@@ -8,6 +8,10 @@ use Fransik\CertbotTransip\Config;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use function dirname;
+use function putenv;
+use function file_exists;
+use function copy;
+use function unlink;
 
 class ConfigTest extends TestCase
 {
@@ -26,9 +30,33 @@ class ConfigTest extends TestCase
         $this->assertSame('default', $config->get('option', 'default'));
     }
 
+    /**
+     * @runInSeparateProcess
+     */
+    public function testReturnsEnvValueWhenSet(): void
+    {
+        $config = new Config(['option' => 'non-env-value']);
+
+        putenv('OPTION=env-value');
+
+        $this->assertSame('env-value', $config->get('option'));
+    }
+
     public function testCanBeCreatedFromFile(): void
     {
+        $baseDir = dirname(__DIR__);
+        $defaultConfig = $baseDir.'/config.php';
+        $distConfig = $baseDir.'/config.php.dist';
+
+        if ($configDoesNotExist = !file_exists($defaultConfig)) {
+            copy($distConfig, $defaultConfig);
+        }
+
         $config = Config::createFromFile();
+
+        if ($configDoesNotExist) {
+            unlink($defaultConfig);
+        }
 
         $this->assertSame('', $config->get(Config::TRANSIP_LOGIN));
     }

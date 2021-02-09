@@ -7,7 +7,9 @@ namespace Fransik\CertbotTransip;
 use RuntimeException;
 use function dirname;
 use function file_exists;
+use function getenv;
 use function sprintf;
+use function strtoupper;
 
 final class Config
 {
@@ -52,6 +54,11 @@ final class Config
      */
     public function get(string $option, $default = null)
     {
+        $envOption = getenv(strtoupper($option));
+        if ($envOption !== false) {
+            return $envOption;
+        }
+
         return $this->options[$option] ?? $default;
     }
 }
