@@ -1,41 +1,51 @@
 {
     "name": "fransik/certbot-dns-transip",
+    "type": "project",
     "description": "Certbot hook to solve a DNS-01 challenge, by creating TXT records using the TransIP API.",
-    "keywords": ["certbot", "letsencrypt", "transip", "dns-01"],
     "homepage": "https://github.com/fransik/certbot-dns-transip",
-    "type": "library",
     "license": "MIT",
     "authors": [
         {
             "name": "Frans Heeremans",
             "email": "mail@fransik.nl",
-            "homepage": "https://github.com/fransik"
-        }
-    ],
-    "support": {
-        "issues": "https://github.com/fransik/certbot-dns-transip/issues"
-    },
-    "repositories": [
-        {
-            "type": "package",
-            "package": {
-                "name": "transip/api",
-                "version": "5.6",
-                "dist": {
-                    "url": "https://api.transip.nl/downloads/transapi_transip.nl_v5_6.tar.gz",
-                    "type": "tar"
-                },
-                "autoload": {
-                    "classmap": ["Transip/"]
-                }
-            }
+            "homepage": "https://github.com/fransik",
+            "role": "Developer"
         }
     ],
     "require": {
-        "transip/api": "~5.6"
+        "php": "^7.3 || ^8.0",
+        "pear/net_dns2": "^1.5.2",
+        "transip/transip-api-php": "^6.6"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^2.18",
+        "phpstan/phpstan": "^0.12.74",
+        "phpunit/phpunit": "^9.5"
+    },
+    "config": {
+        "preferred-install": "dist",
+        "sort-packages": true
     },
     "autoload": {
-        "psr-4": { "FransIk\\Certbot\\": "src/" }
+        "psr-4": {
+            "Fransik\\CertbotTransip\\": "src/"
+        }
     },
-    "bin": ["bin/transip-dns-auth", "bin/transip-dns-cleanup"]
+    "autoload-dev": {
+        "psr-4": {
+            "Fransik\\CertbotTransip\\Tests\\": "tests/"
+        }
+    },
+    "prefer-stable": true,
+    "scripts": {
+        "code-coverage": "phpunit --coverage-clover=.build/coverage.xml",
+        "cs-check": "php-cs-fixer fix --diff --diff-format=udiff --dry-run --verbose",
+        "cs-fix": "php-cs-fixer fix",
+        "phpstan": "phpstan analyse --ansi",
+        "test": "phpunit"
+    },
+    "support": {
+        "issues": "https://github.com/fransik/certbot-dns-transip/issues",
+        "source": "https://github.com/fransik/certbot-dns-transip"
+    }
 }

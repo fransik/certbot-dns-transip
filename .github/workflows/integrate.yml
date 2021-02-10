@@ -1,0 +1,114 @@
+name: Integrate
+
+on:
+  pull_request: null
+  push:
+    branches:
+      - master
+      - develop
+
+jobs:
+  coding-standards:
+    name: Coding standards
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          coverage: none
+          php-version: "7.4"
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v1
+
+      - name: Validate composer.json/lock
+        run: composer validate
+
+      - name: Run PHP CS Fixer
+        run: composer run-script cs-check
+
+  static-code-analysis:
+    name: Static code analysis
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          coverage: none
+          php-version: "7.4"
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v1
+
+      - name: Run PHPStan
+        run: composer run-script phpstan
+
+  tests:
+    name: Tests
+    runs-on: ubuntu-20.04
+    continue-on-error: ${{ matrix.experimental }}
+    strategy:
+      fail-fast: false
+      matrix:
+        php:
+          - "7.3"
+          - "7.4"
+        dependencies:
+          - lowest
+          - highest
+        experimental:
+          - false
+        include:
+          - php: "8.0"
+            dependencies: highest
+            composer-options: --ignore-platform-req=php
+            experimental: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          coverage: none
+          php-version: ${{ matrix.php }}
+
+      - name: Install ${{ matrix.dependencies }} dependencies
+        uses: ramsey/composer-install@v1
+        with:
+          dependency-versions: ${{ matrix.dependencies }}
+          composer-options: ${{ matrix.composer-options }}
+
+      - name: Run PHPUnit
+        run: composer run-script test
+
+  code-coverage:
+    name: Code coverage
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          coverage: pcov
+          php-version: "7.4"
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v1
+
+      - name: Run PHPUnit with PCOV to collect code coverage
+        run: composer run-script code-coverage
+
+      - name: Upload code coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./.build/coverage.xml
