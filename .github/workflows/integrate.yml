@@ -4,8 +4,7 @@ on:
   pull_request: null
   push:
     branches:
-      - master
-      - develop
+      - main
 
 jobs:
   coding-standards:
@@ -23,6 +22,8 @@ jobs:
 
       - name: Install dependencies
         uses: ramsey/composer-install@v1
+        with:
+          dependency-versions: highest
 
       - name: Validate composer.json/lock
         run: composer validate
@@ -45,12 +46,14 @@ jobs:
 
       - name: Install dependencies
         uses: ramsey/composer-install@v1
+        with:
+          dependency-versions: highest
 
       - name: Run PHPStan
         run: composer run-script phpstan
 
   tests:
-    name: Tests
+    name: Tests (PHP ${{ matrix.php }}, ${{ matrix.dependencies }})
     runs-on: ubuntu-20.04
     continue-on-error: ${{ matrix.experimental }}
     strategy:
@@ -103,6 +106,8 @@ jobs:
 
       - name: Install dependencies
         uses: ramsey/composer-install@v1
+        with:
+          dependency-versions: highest
 
       - name: Run PHPUnit with PCOV to collect code coverage
         run: composer run-script code-coverage
