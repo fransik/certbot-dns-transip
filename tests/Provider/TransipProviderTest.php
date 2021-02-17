@@ -81,4 +81,16 @@ class TransipProviderTest extends TestCase
 
         $this->provider->removeChallengeRecord($challenge);
     }
+
+    public function testWillNotRemoveChallengeRecordForUnavailableDomain(): void
+    {
+        $challenge = new ChallengeRecord(
+            'duckduckgo.com',
+            self::VALIDATION
+        );
+
+        $this->expectException(HttpBadResponseException::class);
+
+        $this->provider->removeChallengeRecord($challenge);
+    }
 }
