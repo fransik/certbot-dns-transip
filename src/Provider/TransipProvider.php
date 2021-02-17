@@ -69,6 +69,8 @@ final class TransipProvider implements Provider
         foreach ($dnsEntries as $dnsEntry) {
             if ($this->challengeEqualsDnsEntry($challenge, $dnsEntry)) {
                 $repository->removeDnsEntry($domain, $dnsEntry);
+
+                break;
             }
         }
     }
