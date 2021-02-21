@@ -1,6 +1,7 @@
 .build/
 .env
 .git/
+.github/
 .idea/
 config.php
 tests/
