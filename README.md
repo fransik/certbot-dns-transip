@@ -1,7 +1,7 @@
 # Certbot DNS TransIP :closed_lock_with_key:
 
 [![Release](https://img.shields.io/github/v/release/fransik/certbot-dns-transip?label=stable)](https://github.com/fransik/certbot-dns-transip/releases)
-[![License](https://img.shields.io/github/license/fransik/certbot-dns-transip)](../blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/fransik/certbot-dns-transip)](LICENSE)
 [![CI](https://github.com/fransik/certbot-dns-transip/actions/workflows/ci.yml/badge.svg)](https://github.com/fransik/certbot-dns-transip/actions/workflows/ci.yml)
 [![Docker Image](https://github.com/fransik/certbot-dns-transip/actions/workflows/docker-image.yml/badge.svg)](https://github.com/fransik/certbot-dns-transip/actions/workflows/docker-image.yml)
 [![codecov](https://codecov.io/gh/fransik/certbot-dns-transip/branch/main/graph/badge.svg?token=XBI8HH6HKJ)](https://codecov.io/gh/fransik/certbot-dns-transip)
