@@ -1,31 +1,96 @@
-# certbot-dns-transip
-This package automates the process of completing a DNS-01 challenge for domains using the [TransIP DNS service](https://www.transip.eu/domain-name/).
-The auth script is invoked by [Certbot](https://certbot.eff.org/)'s `--manual-auth-hook`, which then creates the required challenge record using the TransIP API. After validation the `--manual-cleanup-hook` is invoked and the challenge record is removed again.
+# Certbot DNS TransIP :closed_lock_with_key:
 
-## Setup
-### Requirements
-* Certbot
-* PHP & Composer
-* dig - DNS lookup utility
-* A TransIP account (and the domain registered you want a certificate for ;-)
-* API access enabled for this account (https://www.transip.eu/knowledgebase/entry/77-want-use-the-transip-api/)
-* The private key generated in above process
-* When using API whitelist, make sure the public IP of the machine that is running this script is whitelisted
+[![Release](https://img.shields.io/github/v/release/fransik/certbot-dns-transip?label=stable)](https://github.com/fransik/certbot-dns-transip/releases)
+[![License](https://img.shields.io/github/license/fransik/certbot-dns-transip)](../blob/main/LICENSE)
+[![CI](https://github.com/fransik/certbot-dns-transip/actions/workflows/ci.yml/badge.svg)](https://github.com/fransik/certbot-dns-transip/actions/workflows/ci.yml)
+[![Docker Image](https://github.com/fransik/certbot-dns-transip/actions/workflows/docker-image.yml/badge.svg)](https://github.com/fransik/certbot-dns-transip/actions/workflows/docker-image.yml)
+[![codecov](https://codecov.io/gh/fransik/certbot-dns-transip/branch/main/graph/badge.svg?token=XBI8HH6HKJ)](https://codecov.io/gh/fransik/certbot-dns-transip)
 
-### Installation
-* Clone this repository
-* Run `composer install`
-* Update `vendor/transip/api/Transip/ApiSettings.php` with your TransIP login name and private key
-* Symlink `bin/transip-dns-auth` and `bin/transip-dns-cleanup` to something in your `$PATH`
+Looking for a way to get a [Let's Encrypt](https://letsencrypt.org/) (wildcard) certificate for the domain(s) that you registered with [TransIP](https://www.transip.eu/)?
+
+This script automates the process of completing a DNS-01 challenge for domains using the TransIP DNS service.
+The auth script is invoked by [Certbot's](https://certbot.eff.org/) `--manual-auth-hook`, which then creates the required challenge record using the TransIP API. After validation the `--manual-cleanup-hook` is invoked and the challenge record is removed again.
+
+## Requirements
+* A TransIP account with [API access enabled](https://www.transip.eu/knowledgebase/entry/77-using-the-transip-rest-api/#enabling_the_api_access_and_whitelisting)
+* Docker *or*:
+    * Certbot
+    * Composer
+    * PHP >= 7.3 with JSON and OpenSSL extensions enabled
 
 ## Usage
-Ok, the boring part is over.. let's get a shiny Letsencrypt certificate :)
+This describes how to use the script via Docker. If you want to use the script on a system with Certbot & PHP installed [follow these instructions](#manual-installation).
 
-Example:
+* Create a `.env` file with the following content:
+```dotenv
+TRANSIP_LOGIN=YOUR-LOGIN
+TRANSIP_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----XXXXX-----END PRIVATE KEY-----"
+```
+* Make sure your entire [private key](https://www.transip.eu/knowledgebase/entry/77-using-the-transip-rest-api/#generating_a_key_pair) is on a single line (removing all newlines/spaces) and between double quotes
+* Run:
+```shell
+docker run -it --rm \
+    --env-file /path/to/.env \
+    -v "/etc/letsencrypt:/etc/letsencrypt" \
+    -v "/var/lib/letsencrypt:/var/lib/letsencrypt" \
+    fransik/certbot-dns-transip
+```
 
-`# certbot certonly --manual --preferred-challenges=dns --manual-auth-hook transip-dns-auth --manual-cleanup-hook transip-dns-cleanup -d example.com -d www.example.com`
+After validation succeeds (this can take up to 10 minutes) you can find the certificate here: `/etc/letsencrypt/live`.
 
-## Limitations
-Currently tested with a limited number of domains. Please be careful as this script overwrites your DNS zone (keeping all the current records, of course).
+### Certificate renewal
+Make sure the following command runs daily (via cron for example):
+```shell
+docker run --rm \
+    --env-file /path/to/.env \
+    -v "/etc/letsencrypt:/etc/letsencrypt" \
+    -v "/var/lib/letsencrypt:/var/lib/letsencrypt" \
+    fransik/certbot-dns-transip renew
+```
 
-You can always do a test run by commenting out `$transipDns->commit()` and printing the `$dnsEntries` array in the `transip-dns-auth` and `transip-dns-cleanup` scripts to make sure nothing weird happens to your zone.
+### Test certificate
+To request a test certificate run:
+```shell
+docker run -it --rm \
+    --env-file /path/to/.env \
+    -v "/etc/letsencrypt:/etc/letsencrypt" \
+    -v "/var/lib/letsencrypt:/var/lib/letsencrypt" \
+    fransik/certbot-dns-transip certonly \
+    --test-cert \
+    --preferred-challenges=dns \
+    --manual \
+    --manual-auth-hook bin/auth \
+    --manual-cleanup-hook bin/cleanup
+```
+
+## Manual installation
+* Clone this repository
+* Run `composer install --no-dev`
+* Rename `config.php.dist` to `config.php`
+* Update `config.php` with your TransIP login name and [private key](https://www.transip.eu/knowledgebase/entry/77-using-the-transip-rest-api/#generating_a_key_pair)
+* Run:
+```shell
+certbot certonly \
+    --preferred-challenges=dns \
+    --manual \
+    --manual-auth-hook /path/to/certbot-dns-transip/bin/auth \
+    --manual-cleanup-hook /path/to/certbot-dns-transip/bin/cleanup \
+    -d example.com -d "*.example.com"
+```
+
+After validation succeeds (this can take up to 10 minutes) you can find the certificate here: `/etc/letsencrypt/live`.
+
+### Certificate renewal
+Should be automatic on most systems that have the certbot package installed. See [certbot docs](https://certbot.eff.org/docs/using.html#renewing-certificates).
+
+### Test certificate
+To request a test certificate run:
+```shell
+certbot certonly \
+    --test-cert \
+    --preferred-challenges=dns \
+    --manual \
+    --manual-auth-hook /path/to/certbot-dns-transip/bin/auth \
+    --manual-cleanup-hook /path/to/certbot-dns-transip/bin/cleanup \
+    -d example.com -d "*.example.com"
+```
